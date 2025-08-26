@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seismic Monitoring Sensors</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --text: #333;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: var(--secondary);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 80px 0;
+            background: white;
+            margin: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            color: #666;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: #777;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .sensors {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin: 50px 0;
+        }
+        
+        .sensor-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            width: 300px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .sensor-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .sensor-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+        }
+        
+        .sensor-card h3 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .monitoring-demo {
+            background: white;
+            padding: 50px;
+            margin: 50px 0;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin: 30px 0;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .simulation {
+            background: var(--light);
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+        
+        .faq {
+            margin: 50px 0;
+        }
+        
+        .faq-item {
+            background: white;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .faq-question {
+            padding: 20px;
+            background: var(--secondary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            padding: 20px;
+            display: none;
+        }
+        
+        .faq-answer.active {
+            display: block;
+        }
+        
+        footer {
+            background: var(--secondary);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .highlight {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">Seismic Monitoring</div>
+                <ul class="nav-links">
+                    <li><a href="#sensors">Sensors</a></li>
+                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <h1>Seismic Activity Monitoring Sensors</h1>
+            <p>Learn about the specialized sensors used to detect and measure earthquakes and seismic activity around the world.</p>
+            <a href="#sensors" class="btn">Explore Sensors</a>
+        </section>
+
+        <section id="sensors">
+            <div class="section-title">
+                <h2>Key Seismic Monitoring Sensors</h2>
+                <p>These are the primary sensors used in earthquake detection and monitoring</p>
+            </div>
+            
+            <div class="sensors">
+                <div class="sensor-card">
+                    <div class="sensor-icon">
+                        <i class="fas fa-wave-square"></i>
+                    </div>
+                    <h3>Seismometers</h3>
+                    <p>Measures ground motion, including seismic waves generated by earthquakes. The most fundamental tool for detecting seismic activity.</p>
+                </div>
+                
+                <div class="sensor-card">
+                    <div class="sensor-icon">
+                        <i class="fas fa-weight-hanging"></i>
+                    </div>
+                    <h3>Accelerometers</h3>
+                    <p>Measures acceleration forces, used for strong motion detection during powerful earthquakes where standard seismometers may clip.</p>
+                </div>
+                
+                <div class="sensor-card">
+                    <div class="sensor-icon">
+                        <i class="fas fa-satellite"></i>
+                    </div>
+                    <h3>GPS Sensors</h3>
+                    <p>Detects ground deformation and crustal movement over time, helping to understand tectonic strain accumulation.</p>
+                </div>
+                
+                <div class="sensor-card">
+                    <div class="sensor-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3>Strainmeters</h3>
+                    <p>Measures minuscule changes in the distance between two points, detecting crustal deformation.</p>
+                </div>
+                
+                <div class="sensor-card">
+                    <div class="sensor-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h3>Water Level Sensors</h3>
+                    <p>Monitors changes in groundwater levels, which can sometimes change prior to seismic events.</p>
+                </div>
+                
+                <div class="sensor-card">
+                    <div class="sensor-icon">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h3>Gas Emission Sensors</h3>
+                    <p>Detects changes in radon and other gas emissions that may occur before earthquakes.</p>
+                </div>
+            </div>
+            
+            <div class="highlight">
+                <h3>How They Work Together</h3>
+                <p>Modern seismic monitoring networks use multiple sensor types deployed in arrays to accurately detect, locate, and characterize earthquakes. Data from these sensors is transmitted in real-time to processing centers where algorithms analyze the signals to determine earthquake parameters.</p>
+            </div>
+        </section>
+
+        <section id="demo" class="monitoring-demo">
+            <div class="section-title">
+                <h2>Seismic Data Monitoring</h2>
+                <p>Simulated visualization of seismic sensor data during earthquake events</p>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="seismicChart"></canvas>
+            </div>
+            
+            <div class="controls">
+                <button id="simulateSmall" class="btn">Simulate Small Quake</button>
+                <button id="simulateMedium" class="btn">Simulate Medium Quake</button>
+                <button id="simulateLarge" class="btn">Simulate Large Quake</button>
+            </div>
+            
+            <div class="simulation">
+                <h3>Real-world Seismic Networks</h3>
+                <p>In actual seismic monitoring, sensors are deployed in networks covering wide geographical areas. When an earthquake occurs, the difference in arrival times of seismic waves at different stations allows scientists to precisely locate the epicenter.</p>
+                
+                <div class="highlight">
+                    <p>Modern systems can detect earthquakes and issue alerts within seconds, providing valuable warning before destructive seismic waves arrive at populated areas.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="faq">
+            <div class="section-title">
+                <h2>Frequently Asked Questions</h2>
+                <p>Common questions about seismic monitoring sensors</p>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    What is the most important sensor for earthquake detection? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>The seismometer is the most fundamental and important sensor for earthquake detection. It measures ground motion caused by seismic waves and provides the primary data used to determine an earthquake's location, depth, and magnitude.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    How sensitive are modern seismometers? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Modern seismometers are extremely sensitive. They can detect ground movements as small as 1 nanometer (one billionth of a meter). This sensitivity allows them to detect earthquakes anywhere in the world, as well as other vibrations like ocean waves, large explosions, and even cultural noise like traffic and industrial activity.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    Can earthquakes be predicted? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Currently, earthquakes cannot be predicted with precise timing, location, and magnitude. However, seismic networks can provide early warning once an earthquake has begun, detecting the fast-moving but less damaging P-waves before the slower but destructive S-waves and surface waves arrive. This can provide seconds to minutes of warning depending on distance from the epicenter.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    How are seismic sensors powered in remote areas? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Seismic sensors in remote locations are typically powered by solar panels combined with rechargeable batteries. They often transmit data via satellite communication or cellular networks where available. Some sensors store data locally until it can be retrieved manually.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Seismic Monitoring</h3>
+                    <p>Understanding the sensors that help us monitor and understand seismic activity.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Educational Resource</h3>
+                    <p>This page is for educational purposes to demonstrate the types of sensors used in seismic monitoring.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Seismic Monitoring Education. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize seismic data chart
+        const ctx = document.getElementById('seismicChart').getContext('2d');
+        let seismicChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 100}, (_, i) => i + 1),
+                datasets: [{
+                    label: 'Seismic Activity',
+                    data: Array(100).fill(0),
+                    borderColor: '#3498db',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 0
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        min: -10,
+                        title: {
+                            display: true,
+                            text: 'Amplitude'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time (seconds)'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Seismic Sensor Data'
+                    }
+                }
+            }
+        });
+        
+        // Function to generate earthquake data
+        function generateEarthquakeData(magnitude) {
+            const data = Array(70).fill(0);
+            
+            // P-wave
+            for (let i = 70; i < 75; i++) {
+                data[i] = (magnitude * 0.2) * Math.sin((i - 70) * 0.5);
+            }
+            
+            // S-wave
+            for (let i = 75; i < 90; i++) {
+                data[i] = magnitude * Math.sin((i - 75) * 0.3) * Math.exp(-(i - 75) * 0.05);
+            }
+            
+            // Surface waves
+            for (let i = 90; i < 100; i++) {
+                data[i] = (magnitude * 0.7) * Math.sin((i - 90) * 0.8) * Math.exp(-(i - 90) * 0.07);
+            }
+            
+            return data;
+        }
+        
+        // Add earthquake simulation functionality
+        document.getElementById('simulateSmall').addEventListener('click', function() {
+            simulateEarthquake(3.5);
+        });
+        
+        document.getElementById('simulateMedium').addEventListener('click', function() {
+            simulateEarthquake(5.5);
+        });
+        
+        document.getElementById('simulateLarge').addEventListener('click', function() {
+            simulateEarthquake(7.5);
+        });
+        
+        function simulateEarthquake(magnitude) {
+            // Generate new earthquake data
+            const earthquakeData = generateEarthquakeData(magnitude);
+            
+            // Update chart
+            seismicChart.data.datasets[0].data = earthquakeData;
+            
+            // Adjust y-axis scale based on magnitude
+            const maxAmplitude = Math.max(...earthquakeData.map(Math.abs));
+            seismicChart.options.scales.y.max = maxAmplitude * 1.2;
+            seismicChart.options.scales.y.min = -maxAmplitude * 1.2;
+            
+            seismicChart.update();
+            
+            // Display info about the simulated earthquake
+            alert(`Simulating a magnitude ${magnitude} earthquake\n\n` +
+                 `Notice the different wave types:\n` +
+                 `- Initial small P-waves (first arrivals)\n` +
+                 `- Larger S-waves (secondary waves)\n` +
+                 `- Surface waves (most destructive)`);
+        }
+        
+        // FAQ toggle functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                answer.classList.toggle('active');
+                
+                const icon = question.querySelector('i');
+                if (answer.classList.contains('active')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
